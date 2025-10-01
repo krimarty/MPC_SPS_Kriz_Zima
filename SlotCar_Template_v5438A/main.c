@@ -30,11 +30,16 @@ int main(void)
 {
     WDTCTL = WDTPW | WDTHOLD;   // stop watchdog timer
     initClockTo16MHz();
+    LED_init();
+
+
+    go_forward();
+    front_blink();
 
     while(1)
     {
 
-    }
+    }   
 }
 
 

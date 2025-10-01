@@ -20,3 +20,9 @@ void RGB_LED_init(void)
     P7DIR |= BIT3;  // GREEN led as output
     P7DIR |= BIT2;  // BLUE led as output
 }
+
+void front_blink()
+{
+    LED_FL_ON();
+    LED_FR_ON();
+}

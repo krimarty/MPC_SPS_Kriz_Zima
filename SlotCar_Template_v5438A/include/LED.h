@@ -64,6 +64,8 @@
 void LED_init(void);
 void RGB_LED_init(void);
 
+void front_blink();
+
 // variables
 
 #endif /* LED_H_ */

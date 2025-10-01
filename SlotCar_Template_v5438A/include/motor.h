@@ -34,5 +34,7 @@
 #define H_PHASE_RV() (H_PHASE_PORT |= H_PHASE_PIN)      //direction backward
 #define H_PHASE_FW() (H_PHASE_PORT &= ~H_PHASE_PIN)     //direction forward
 
+void go_forward();
+
 
 #endif /* MOTOR_H_ */
