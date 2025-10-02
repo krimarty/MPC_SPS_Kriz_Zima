@@ -24,6 +24,7 @@ signed int Y = 0;
 int read = 0;
 
 int16_t x;
+int16_ad = 4;
 uint16_t a;
 
 int main(void)
