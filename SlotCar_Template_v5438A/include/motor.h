@@ -34,7 +34,12 @@
 #define H_PHASE_RV() (H_PHASE_PORT |= H_PHASE_PIN)      //direction backward
 #define H_PHASE_FW() (H_PHASE_PORT &= ~H_PHASE_PIN)     //direction forward
 
-void go_forward();
+#define PWM_COUNTER 640 // 16000000/25000 where 25000 kHz is pwm freq
+
+void motor_init();
+void motor_pwm_init();
+void motor_duty(uint8_t duty);
+void go_forward(uint8_t duty);
 
 
 #endif /* MOTOR_H_ */

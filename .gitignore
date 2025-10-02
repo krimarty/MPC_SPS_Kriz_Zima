@@ -1,0 +1,5 @@
+*.obj
+*.idx
+*.out
+*.map
+*.xml

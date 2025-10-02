@@ -1,7 +1,7 @@
 ******************************************************************************
                   MSP430 Linker Unix v21.6.1                   
 ******************************************************************************
->> Linked Wed Oct  1 14:41:01 2025
+>> Linked Thu Oct  2 08:54:01 2025
 
 OUTPUT FILE NAME:   <SlotCar_Template_v5438A.out>
 ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 00005d04
@@ -84,7 +84,7 @@ MEMORY CONFIGURATION
   INT61                 0000fffa   00000002  00000002  00000000  RWIX
   INT62                 0000fffc   00000002  00000002  00000000  RWIX
   RESET                 0000fffe   00000002  00000002  00000000  RWIX
-  FLASH2                00010000   00035bf8  000001b2  00035a46  RWIX
+  FLASH2                00010000   00035bf8  000002a4  00035954  RWIX
 
 
 SECTION ALLOCATION MAP
@@ -197,40 +197,47 @@ SYSNMI     0    0000fffc    00000002
 .reset     0    0000fffe    00000002     
                   0000fffe    00000002     rts430x_lc_rd_eabi.lib : boot.c.obj (.reset)
 
-.text      0    00010000    000001b2     
+.text      0    00010000    000002a4     
                   00010000    00000076     rts430x_lc_rd_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
-                  00010076    00000054                            : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit_hold_wdt:__TI_auto_init_nobinit_nopinit_hold_wdt)
-                  000100ca    0000004c     main.obj (.text:initClockTo16MHz)
-                  00010116    00000024     rts430x_lc_rd_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init_nomemset:__TI_zero_init_nomemset)
-                  0001013a    0000001a     main.obj (.text:main)
-                  00010154    00000014     rts430x_lc_rd_eabi.lib : memcpy.c.obj (.text:memcpy)
-                  00010168    00000012                            : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
-                  0001017a    00000010     motor.obj (.text:go_forward)
-                  0001018a    0000000e     LED.obj (.text:LED_init)
-                  00010198    0000000e     LED.obj (.text:front_blink)
-                  000101a6    00000006     rts430x_lc_rd_eabi.lib : exit.c.obj (.text:abort)
-                  000101ac    00000004                            : pre_init.c.obj (.text:_system_pre_init)
-                  000101b0    00000002                            : startup.c.obj (.text:_system_post_cinit)
+                  00010076    00000058                            : div32u.asm.obj (.text)
+                  000100ce    00000054                            : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit_hold_wdt:__TI_auto_init_nobinit_nopinit_hold_wdt)
+                  00010122    0000004c     main.obj (.text:initClockTo16MHz)
+                  0001016e    00000036     motor.obj (.text:motor_duty)
+                  000101a4    00000024     rts430x_lc_rd_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init_nomemset:__TI_zero_init_nomemset)
+                  000101c8    00000024     motor.obj (.text:motor_pwm_init)
+                  000101ec    00000024     rts430x_lc_rd_eabi.lib : mult32_f5hw.asm.obj (.text)
+                  00010210    00000022     main.obj (.text:main)
+                  00010232    00000016     motor.obj (.text:go_forward)
+                  00010248    00000014     rts430x_lc_rd_eabi.lib : memcpy.c.obj (.text:memcpy)
+                  0001025c    00000012                            : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
+                  0001026e    0000000e     LED.obj (.text:LED_init)
+                  0001027c    0000000e     LED.obj (.text:front_blink)
+                  0001028a    0000000e     motor.obj (.text:motor_init)
+                  00010298    00000006     rts430x_lc_rd_eabi.lib : exit.c.obj (.text:abort)
+                  0001029e    00000004                            : pre_init.c.obj (.text:_system_pre_init)
+                  000102a2    00000002                            : startup.c.obj (.text:_system_post_cinit)
 
 MODULE SUMMARY
 
        Module                       code   ro data   rw data
        ------                       ----   -------   -------
     ./
-       main.obj                     362    4         23     
+       main.obj                     370    4         23     
     +--+----------------------------+------+---------+---------+
-       Total:                       362    4         23     
+       Total:                       370    4         23     
                                                             
     ./source/
+       motor.obj                    126    0         0      
        LED.obj                      28     0         0      
-       motor.obj                    16     0         0      
     +--+----------------------------+------+---------+---------+
-       Total:                       44     0         0      
+       Total:                       154    0         0      
                                                             
     /home/martin/ti/ccs2030/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/lib/rts430x_lc_rd_eabi.lib
        copy_decompress_lzss.c.obj   118    0         0      
+       div32u.asm.obj               88     0         0      
        autoinit.c.obj               84     0         0      
        copy_zero_init.c.obj         36     0         0      
+       mult32_f5hw.asm.obj          36     0         0      
        boot.c.obj                   28     2         0      
        memcpy.c.obj                 20     0         0      
        copy_decompress_none.c.obj   18     0         0      
@@ -259,12 +266,12 @@ MODULE SUMMARY
        int62.asm.obj                0      2         0      
        startup.c.obj                2      0         0      
     +--+----------------------------+------+---------+---------+
-       Total:                       324    42        0      
+       Total:                       448    42        0      
                                                             
        Stack:                       0      0         160    
        Linker Generated:            0      41        0      
     +--+----------------------------+------+---------+---------+
-       Grand Total:                 730    87        183    
+       Grand Total:                 972    87        183    
 
 
 LINKER GENERATED COPY TABLES
@@ -369,7 +376,7 @@ address   name
 00000732  ADC12MEM9                              
 00000733  ADC12MEM9_H                            
 00000732  ADC12MEM9_L                            
-000101a6  C$$EXIT                                
+00010298  C$$EXIT                                
 00000150  CRCDI                                  
 00000152  CRCDIRB                                
 00000153  CRCDIRB_H                              
@@ -421,7 +428,7 @@ address   name
 00000146  FCTL4                                  
 00000147  FCTL4_H                                
 00000146  FCTL4_L                                
-0001018a  LED_init                               
+0001026e  LED_init                               
 000004c4  MAC                                    
 000004da  MAC32H                                 
 000004db  MAC32H_H                               
@@ -965,9 +972,9 @@ address   name
 00005d28  __TI_Handler_Table_Base                
 00005d34  __TI_Handler_Table_Limit               
 00005d20  __TI_ISR_TRAP                          
-00010076  __TI_auto_init_nobinit_nopinit_hold_wdt
+000100ce  __TI_auto_init_nobinit_nopinit_hold_wdt
 00010000  __TI_decompress_lzss                   
-00010168  __TI_decompress_none                   
+0001025c  __TI_decompress_none                   
 0000ffd2  __TI_int41                             
 0000ffd4  __TI_int42                             
 0000ffd6  __TI_int43                             
@@ -993,19 +1000,25 @@ address   name
 ffffffff  __TI_pprof_out_hndl                    
 ffffffff  __TI_prof_data_size                    
 ffffffff  __TI_prof_data_start                   
-00010116  __TI_zero_init_nomemset                
+000101a4  __TI_zero_init_nomemset                
 ffffffff  __c_args__                             
+00010076  __mspabi_divul                         
+000101ec  __mspabi_mpyl_f5hw                     
+00010076  __mspabi_remul                         
 00005d04  _c_int00_noargs                        
 0000fffe  _reset_vector                          
 00005b60  _stack                                 
-000101b0  _system_post_cinit                     
-000101ac  _system_pre_init                       
-000101a6  abort                                  
-00010198  front_blink                            
-0001017a  go_forward                             
-000100ca  initClockTo16MHz                       
-0001013a  main                                   
-00010154  memcpy                                 
+000102a2  _system_post_cinit                     
+0001029e  _system_pre_init                       
+00010298  abort                                  
+0001027c  front_blink                            
+00010232  go_forward                             
+00010122  initClockTo16MHz                       
+00010210  main                                   
+00010248  memcpy                                 
+0001016e  motor_duty                             
+0001028a  motor_init                             
+000101c8  motor_pwm_init                         
 00001c06  read                                   
 00001c0e  results                                
 
@@ -1719,22 +1732,28 @@ address   name
 0000fffc  __TI_int62                             
 0000fffe  _reset_vector                          
 00010000  __TI_decompress_lzss                   
-00010076  __TI_auto_init_nobinit_nopinit_hold_wdt
-000100ca  initClockTo16MHz                       
-00010116  __TI_zero_init_nomemset                
-0001013a  main                                   
-00010154  memcpy                                 
-00010168  __TI_decompress_none                   
-0001017a  go_forward                             
-0001018a  LED_init                               
-00010198  front_blink                            
-000101a6  C$$EXIT                                
-000101a6  abort                                  
-000101ac  _system_pre_init                       
-000101b0  _system_post_cinit                     
+00010076  __mspabi_divul                         
+00010076  __mspabi_remul                         
+000100ce  __TI_auto_init_nobinit_nopinit_hold_wdt
+00010122  initClockTo16MHz                       
+0001016e  motor_duty                             
+000101a4  __TI_zero_init_nomemset                
+000101c8  motor_pwm_init                         
+000101ec  __mspabi_mpyl_f5hw                     
+00010210  main                                   
+00010232  go_forward                             
+00010248  memcpy                                 
+0001025c  __TI_decompress_none                   
+0001026e  LED_init                               
+0001027c  front_blink                            
+0001028a  motor_init                             
+00010298  C$$EXIT                                
+00010298  abort                                  
+0001029e  _system_pre_init                       
+000102a2  _system_post_cinit                     
 ffffffff  __TI_pprof_out_hndl                    
 ffffffff  __TI_prof_data_size                    
 ffffffff  __TI_prof_data_start                   
 ffffffff  __c_args__                             
 
-[722 symbols]
+[728 symbols]

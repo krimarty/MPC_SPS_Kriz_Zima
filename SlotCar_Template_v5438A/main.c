@@ -32,8 +32,8 @@ int main(void)
     initClockTo16MHz();
     LED_init();
 
-
-    go_forward();
+    motor_init();
+    go_forward(30);
     front_blink();
 
     while(1)
