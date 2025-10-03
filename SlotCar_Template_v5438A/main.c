@@ -18,21 +18,28 @@ uint8_t RX_buffer[I2C_RX_BUFFER_SIZE] = {0};
 uint8_t RXByteCtr = 0;
 uint8_t ReceiveIndex = 0;
 
+// UART
+volatile uint8_t UART_rx_state = 0;
+volatile uint8_t UART_rx_cmd = 0;
+volatile uint8_t UART_addr = 0;
+volatile uint8_t memory[16];
+
 uint16_t Y_unsigned = 0;
 signed int Y = 0;
 
 int read = 0;
 
 int16_t x;
-int16_ad = 4;
 uint16_t a;
 
 int main(void)
 {
     WDTCTL = WDTPW | WDTHOLD;   // stop watchdog timer
     initClockTo16MHz();
+    _BIS_SR(GIE);
     LED_init();
 
+    UART_init();
     motor_init();
     go_forward(30);
     front_blink();
@@ -41,6 +48,44 @@ int main(void)
     {
 
     }   
+}
+
+// Interupt for UART
+#pragma vector=USCI_A1_VECTOR
+__interrupt void USCI_A1_ISR(void)
+{
+    switch(__even_in_range(UCA1IV, 4))
+    {
+        case 0: break;           // No interrupt
+        case 2:                  // RXIFG – received
+        {
+            uint8_t rx_val = UCA1RXBUF;  // byte from buffer
+            switch (UART_rx_state) {
+              case 0: // Waiting for sync
+                if (rx_val == 0xAA) {UART_rx_state = 1;}
+                break;
+
+              case 1: // R/W
+                UART_rx_cmd = rx_val;
+                UART_rx_state = 2;
+                break;
+
+              case 2: // Adress
+                UART_addr = rx_val;
+                UART_rx_state = 3;
+                break;
+
+              case 3: // Data
+                if (UART_rx_cmd == 'W') {memory[UART_addr] = rx_val;}
+                else if (UART_rx_cmd == 'R') {UCA1TXBUF = memory[UART_addr];}
+                UART_rx_state = 0;
+                break;
+            }
+            break;
+        }
+        case 4: break;           // TXIFG – připraveno k odeslání
+        default: break;
+    }
 }
 
 

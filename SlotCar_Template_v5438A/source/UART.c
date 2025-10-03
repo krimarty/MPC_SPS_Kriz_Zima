@@ -20,13 +20,18 @@ void UART_init(void)
 
     UCA1CTL1 |= UCSSEL__SMCLK; //nastaveni zdrojoveho frekvence SMCLK
 
-   // UCA1BR0 = 0x34;           //16MHz / 19200 baud
+   //UCA1BR0 = 0x34;           //16MHz / 19200 baud
    //UCA1BR1 = 0x00;
    //UCA1MCTL = 0x11;          //UCOS16 = 1 / UCBRFx = 1 -> dle nastaveni v tabulce datasheetu
 
    UCA1BR0 = 0x08;           //16MHz / 115200 baud
    UCA1BR1 = 0x00;
    UCA1MCTL = UCBRF_11 + UCOS16; //UCOS16 = 1 / UCBRFx = 11 -> dle nastaveni v tabulce datasheetu
+
+   //UCA1BR0 = 0x10;           //16MHz / 9600 baud
+   //UCA1BR1 = 0x00;
+   //UCA1MCTL = (4 << 4) | 0xD6 | UCOS16; // UCBRF=4, UCBRS=0xD6, UCOS16=1
+
    UCA1CTL1 &= ~UCSWRST;     //UCA1 softwarovy reset -> OFF
 
    UCA1IE |= UCRXIE;         //Enable USCI_A1 RX interrupt
