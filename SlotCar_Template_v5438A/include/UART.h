@@ -10,8 +10,20 @@
 
 #include "stdint.h"
 #include <msp430.h>
+#include <stdbool.h>
+
+#define UART_BUFFER_SIZE 16
+
+typedef struct {
+    uint8_t data[UART_BUFFER_SIZE];
+    uint8_t length;
+    uint8_t index;
+    bool buffer_empty;
+} UART_tx_buffer_t;
 
 void UART_init(void);     //initialization and initiation communication -- default baud rate is 19600
+void UART_tx_timer_init(void);
+void UART_prepare_buffer_bin(volatile UART_tx_buffer_t* buf, int16_t* imu_data, uint8_t len);
 
 
 #endif /* UART_H_ */

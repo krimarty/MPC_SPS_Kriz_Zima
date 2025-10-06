@@ -34,6 +34,47 @@ void UART_init(void)
 
    UCA1CTL1 &= ~UCSWRST;     //UCA1 softwarovy reset -> OFF
 
+   UART_tx_timer_init();
+
    UCA1IE |= UCRXIE;         //Enable USCI_A1 RX interrupt
 }
+
+void UART_tx_timer_init(void)
+{
+    TA1CCR0 = 12500 - 1;              // 250000 Hz / 20 Hz = 12500
+    TA1CTL = TASSEL_2 | MC_1 | ID_3;  // SMCLK (16 MHz), /8 -> 2 MHz
+    TA1EX0 = TAIDEX_7;                // další dělička /8 => celkem /64
+    TA1CCTL0 = CCIE;                  // povolit přerušení
+}
+
+
+void UART_prepare_buffer_bin(volatile UART_tx_buffer_t* buf, int16_t* imu_data, uint8_t len)
+{
+    if(buf->buffer_empty == false)
+        return;
+    uint8_t idx = 0;
+
+    buf->length = 0;
+
+    uint8_t i;
+    for (i = 0; i < len && (idx + 2 + 1) <= sizeof(buf->data); i++)
+    {
+        buf->data[idx++] = imu_data[i] & 0xFF;
+        buf->data[idx++] = (imu_data[i] >> 8) & 0xFF;
+    }
+
+    buf->data[idx++] = 0xAA;
+
+    buf->index = 0;
+
+    __disable_interrupt();
+    buf->length = idx;
+    buf->buffer_empty = false;
+    __enable_interrupt();
+}
+
+
+
+
+
 

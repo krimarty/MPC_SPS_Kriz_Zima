@@ -20,9 +20,14 @@ uint8_t ReceiveIndex = 0;
 
 // UART
 volatile uint8_t UART_rx_state = 0;
-volatile uint8_t UART_rx_cmd = 0;
 volatile uint8_t UART_addr = 0;
-volatile uint8_t memory[16];
+volatile uint8_t UART_rx_memory[4];
+// sending buffers
+volatile UART_tx_buffer_t tx_bufferA = {0};
+volatile UART_tx_buffer_t tx_bufferB = {0};
+// pointers for the buffers
+volatile UART_tx_buffer_t* tx_buffer_Send = &tx_bufferA;
+volatile UART_tx_buffer_t* tx_buffer_Prepare = &tx_bufferB;
 
 uint16_t Y_unsigned = 0;
 signed int Y = 0;
@@ -44,9 +49,17 @@ int main(void)
     go_forward(30);
     front_blink();
 
+    tx_buffer_Prepare->buffer_empty = true;
+
+    int16_t imu_data[6];
+    uint8_t i = 0;
+    for (; i < 6; i++) 
+    {
+      imu_data[i] = i+1;
+    }
     while(1)
     {
-
+    UART_prepare_buffer_bin(tx_buffer_Prepare, imu_data,6);
     }   
 }
 
@@ -65,26 +78,46 @@ __interrupt void USCI_A1_ISR(void)
                 if (rx_val == 0xAA) {UART_rx_state = 1;}
                 break;
 
-              case 1: // R/W
-                UART_rx_cmd = rx_val;
+              case 1: // Adress
+                UART_addr = rx_val;
                 UART_rx_state = 2;
                 break;
 
-              case 2: // Adress
-                UART_addr = rx_val;
-                UART_rx_state = 3;
-                break;
-
-              case 3: // Data
-                if (UART_rx_cmd == 'W') {memory[UART_addr] = rx_val;}
-                else if (UART_rx_cmd == 'R') {UCA1TXBUF = memory[UART_addr];}
+              case 2: // Data
+                UART_rx_memory[UART_addr] = rx_val;
                 UART_rx_state = 0;
                 break;
             }
             break;
         }
-        case 4: break;           // TXIFG – připraveno k odeslání
+        case 4:   // Ready to send next byte
+          if (tx_buffer_Send->index < tx_buffer_Send->length)
+          {
+            UCA1TXBUF = tx_buffer_Send->data[tx_buffer_Send->index++];
+          }
+          break;
         default: break;
+    }
+}
+
+// Timer for UART TX periodic communication
+#pragma vector = TIMER1_A0_VECTOR
+__interrupt void Timer1_A_ISR(void)
+{
+    if (tx_buffer_Send->index == tx_buffer_Send->length) // only if the old message has been send
+    {
+        if (tx_buffer_Prepare->length > 0) // only if there is something to send
+        {
+            volatile UART_tx_buffer_t* tmp = tx_buffer_Send;
+            tx_buffer_Send = tx_buffer_Prepare;
+            tx_buffer_Prepare = tmp;
+
+            tx_buffer_Prepare->length = 0;
+            tx_buffer_Prepare->buffer_empty = true;
+            tx_buffer_Send->index = 0;
+            UCA1TXBUF = tx_buffer_Send->data[tx_buffer_Send->index++];
+            UCA1IE |= UCTXIE;
+        }
     }
 }
 
