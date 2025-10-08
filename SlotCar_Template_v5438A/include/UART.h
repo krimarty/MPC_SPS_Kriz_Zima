@@ -8,11 +8,12 @@
 #ifndef UART_H_
 #define UART_H_
 
+#include <stdio.h>
 #include "stdint.h"
-#include <msp430.h>
 #include <stdbool.h>
+#include <msp430.h>
 
-#define UART_BUFFER_SIZE 16
+#define UART_BUFFER_SIZE 50
 
 typedef struct {
     uint8_t data[UART_BUFFER_SIZE];

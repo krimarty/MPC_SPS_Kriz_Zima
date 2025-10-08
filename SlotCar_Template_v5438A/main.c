@@ -22,12 +22,8 @@ uint8_t ReceiveIndex = 0;
 volatile uint8_t UART_rx_state = 0;
 volatile uint8_t UART_addr = 0;
 volatile uint8_t UART_rx_memory[4];
-// sending buffers
-volatile UART_tx_buffer_t tx_bufferA = {0};
-volatile UART_tx_buffer_t tx_bufferB = {0};
-// pointers for the buffers
-volatile UART_tx_buffer_t* tx_buffer_Send = &tx_bufferA;
-volatile UART_tx_buffer_t* tx_buffer_Prepare = &tx_bufferB;
+volatile UART_tx_buffer_t UART_tx_buffer = {0};
+
 
 uint16_t Y_unsigned = 0;
 signed int Y = 0;
@@ -49,17 +45,17 @@ int main(void)
     go_forward(30);
     front_blink();
 
-    tx_buffer_Prepare->buffer_empty = true;
+    UART_tx_buffer.buffer_empty = true;
 
     int16_t imu_data[6];
     uint8_t i = 0;
     for (; i < 6; i++) 
     {
-      imu_data[i] = i+1;
+      imu_data[i] = 20000+i;
     }
     while(1)
     {
-    UART_prepare_buffer_bin(tx_buffer_Prepare, imu_data,6);
+    UART_prepare_buffer_bin(&UART_tx_buffer, imu_data,6);
     }   
 }
 
@@ -91,10 +87,11 @@ __interrupt void USCI_A1_ISR(void)
             break;
         }
         case 4:   // Ready to send next byte
-          if (tx_buffer_Send->index < tx_buffer_Send->length)
+          if (UART_tx_buffer.index < UART_tx_buffer.length)
           {
-            UCA1TXBUF = tx_buffer_Send->data[tx_buffer_Send->index++];
+            UCA1TXBUF = UART_tx_buffer.data[UART_tx_buffer.index++];
           }
+          else { UART_tx_buffer.buffer_empty = true; }
           break;
         default: break;
     }
@@ -104,20 +101,10 @@ __interrupt void USCI_A1_ISR(void)
 #pragma vector = TIMER1_A0_VECTOR
 __interrupt void Timer1_A_ISR(void)
 {
-    if (tx_buffer_Send->index == tx_buffer_Send->length) // only if the old message has been send
+    if (UART_tx_buffer.buffer_empty == false)
     {
-        if (tx_buffer_Prepare->length > 0) // only if there is something to send
-        {
-            volatile UART_tx_buffer_t* tmp = tx_buffer_Send;
-            tx_buffer_Send = tx_buffer_Prepare;
-            tx_buffer_Prepare = tmp;
-
-            tx_buffer_Prepare->length = 0;
-            tx_buffer_Prepare->buffer_empty = true;
-            tx_buffer_Send->index = 0;
-            UCA1TXBUF = tx_buffer_Send->data[tx_buffer_Send->index++];
-            UCA1IE |= UCTXIE;
-        }
+      UCA1TXBUF = UART_tx_buffer.data[UART_tx_buffer.index++];
+      UCA1IE |= UCTXIE;
     }
 }
 
