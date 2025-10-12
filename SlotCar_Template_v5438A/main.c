@@ -6,9 +6,13 @@
 #include "include/UART.h"
 #include "include/ADXL343.h"
 #include "include/main.h"
+#include "include/QMI8658.h"
 //#include "include/L3GD20H.h"
 
+// QMI8658 SPI snimac
+
 #define I2C_RX_BUFFER_SIZE 5
+#define SPI_BUFFER_SIZE 8
 
 void initClockTo16MHz(void);
 
@@ -24,6 +28,8 @@ volatile uint8_t UART_addr = 0;
 volatile uint8_t UART_rx_memory[4];
 volatile UART_tx_buffer_t UART_tx_buffer = {0};
 
+
+//
 
 uint16_t Y_unsigned = 0;
 signed int Y = 0;
@@ -45,6 +51,8 @@ int main(void)
     go_forward(30);
     front_blink();
 
+    QMI8658_init();
+
     UART_tx_buffer.buffer_empty = true;
 
     int16_t imu_data[6];
@@ -53,9 +61,28 @@ int main(void)
     {
       imu_data[i] = 20000+i;
     }
-    while(1)
-    {
-    UART_prepare_buffer_bin(&UART_tx_buffer, imu_data,6);
+
+    // hodnoty ze snimace
+    int16_t ax, ay, az, gx, gy, gz;
+    uint8_t whoami, ctrl1, ctrl2, ctrl3, ctrl5, ctrl7, status;
+
+    while(1){
+        UART_prepare_buffer_bin(&UART_tx_buffer, imu_data,6);
+
+        // kontrola configu
+        whoami = QMI8658_read_reg(0x00);   // WHOAMI
+        ctrl1  = QMI8658_read_reg(0x02);   // CTRL1
+        ctrl2  = QMI8658_read_reg(0x03);   // CTRL2
+        ctrl3  = QMI8658_read_reg(0x04);   // CTRL3
+        ctrl5  = QMI8658_read_reg(0x06);   // CTRL5
+        ctrl7  = QMI8658_read_reg(0x08);   // CTRL7
+        status = QMI8658_read_reg(0x2D);   // STATUSINT
+
+        // načti data ze snímače 
+        QMI8658_read_accel(&ax, &ay, &az);
+        QMI8658_read_gyro(&gx, &gy, &gz);
+
+        __delay_cycles(1600000);  // ~100 ms mezi čteními
     }   
 }
 
