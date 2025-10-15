@@ -1,7 +1,7 @@
 
 #include "include/QMI8658.h"
 #include "include/SPI.h"
-
+#include "include/main.h"
 static inline void small_wait(void){ __delay_cycles(16); }
 
 uint8_t QMI8658_read_reg(uint8_t reg){
@@ -10,6 +10,7 @@ uint8_t QMI8658_read_reg(uint8_t reg){
     //uint8_t v = SPI_read_byte(reg);
     small_wait();
     return v;
+
 }
 
 static void QMI8658_write_reg(uint8_t reg, uint8_t val){
@@ -19,27 +20,22 @@ static void QMI8658_write_reg(uint8_t reg, uint8_t val){
 }
 
 void QMI8658_init(void){
+    SENSOR_POWER_ON();
     SPI_init();
-
-    // debug
+    
+    // debug;
     uint8_t id = QMI8658_read_reg(REG_QMI_WHOAMI);
     if(id != 0x05) {
         while(1){}  // debug
     }
-    id = 8;
-
-    // debug
 
     // Enable auto-increment
-    QMI8658_write_reg(REG_QMI_CTRL1, 0x00);
-
+    QMI8658_write_reg(REG_QMI_CTRL1, 0x20);
     // Accel ±16g @112 Hz; Gyro ±2048 dps @112 Hz + self test
-    QMI8658_write_reg(REG_QMI_CTRL2, 0xB6);
-    QMI8658_write_reg(REG_QMI_CTRL3, 0xF6);
-
+    QMI8658_write_reg(REG_QMI_CTRL2, 0x36);
+    QMI8658_write_reg(REG_QMI_CTRL3, 0x76);
     // LPF enable s 5.39% odr 
     QMI8658_write_reg(REG_QMI_CTRL5, 0x55);
-
     // Enable aEN|gEN + data ready pin2
     QMI8658_write_reg(REG_QMI_CTRL7, 0x23);
     small_wait();

@@ -8,6 +8,7 @@
 // includes
 #include "include/SPI.h"
 
+static inline void spi_init_wait(void){ __delay_cycles(10000000); }
 
 // functions
 /*
@@ -31,6 +32,8 @@ void SPI_init(void){
     UCB0CTL1 |= UCSSEL_2;         // SMCLK clock source
     UCB0BRW = 0x0004;              //
     UCB0CTL1 &= ~UCSWRST;         // Release state machine from reset state
+
+    spi_init_wait();
 }
 /*
  *  SPI_read_byte - reads byte at the address specified by addr parameter

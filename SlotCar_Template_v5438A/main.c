@@ -124,20 +124,10 @@ __interrupt void USCI_A1_ISR(void)
 #pragma vector = TIMER1_A0_VECTOR
 __interrupt void Timer1_A_ISR(void)
 {
-    if (UART_tx_buffer.buffer_empty == false)
-    {
+    if (UART_tx_buffer.buffer_empty == false){
       UCA1TXBUF = UART_tx_buffer.data[UART_tx_buffer.index++];
       UCA1IE |= UCTXIE;
-    }
-
-    if (tmp_counter > 5)
-    {
-      tmp_counter = 0;
-      tmp_toggle = !tmp_toggle;
-      led_toggle(tmp_toggle);
-    }
-    else { tmp_counter++; }
-
+    }  
 }
 
 
