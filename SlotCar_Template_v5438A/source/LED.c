@@ -11,7 +11,6 @@ void LED_init(void)
 {
     P5DIR |= 0x30;  // P5.4 and P5.5 as output
     P4DIR |= 0xC0;  // P4.6 and P4.7 as output
-
 }
 
 void RGB_LED_init(void)
@@ -21,8 +20,21 @@ void RGB_LED_init(void)
     P7DIR |= BIT2;  // BLUE led as output
 }
 
-void front_blink()
+void led_toggle(bool var)
 {
-    LED_FL_ON();
-    LED_FR_ON();
+    if (var)
+    {
+        LED_FL_ON();
+        LED_FR_ON();
+        LED_RL_OFF();
+        LED_RR_OFF();
+    }
+    else {
+        LED_FL_OFF();
+        LED_FR_OFF();
+        LED_RL_ON();
+        LED_RR_ON();
+    }
 }
+
+
