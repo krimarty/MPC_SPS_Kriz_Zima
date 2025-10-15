@@ -11,6 +11,8 @@
 
 #include "stdint.h"
 #include <msp430.h>
+#include <stdbool.h>
+
 // macros definition
 // LED ports definition
 #define LED_FL_PORT  P4OUT
@@ -63,6 +65,7 @@
 // functions prototypes
 void LED_init(void);
 void RGB_LED_init(void);
+void led_toggle(bool var);
 
 void front_blink();
 

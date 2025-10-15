@@ -28,7 +28,6 @@ volatile uint8_t UART_addr = 0;
 volatile uint8_t UART_rx_memory[4];
 volatile UART_tx_buffer_t UART_tx_buffer = {0};
 
-//
 
 uint16_t Y_unsigned = 0;
 signed int Y = 0;
@@ -48,7 +47,6 @@ int main(void)
     UART_init();
     motor_init();
     go_forward(30);
-    front_blink();
 
     QMI8658_init();
 
@@ -131,6 +129,15 @@ __interrupt void Timer1_A_ISR(void)
       UCA1TXBUF = UART_tx_buffer.data[UART_tx_buffer.index++];
       UCA1IE |= UCTXIE;
     }
+
+    if (tmp_counter > 5)
+    {
+      tmp_counter = 0;
+      tmp_toggle = !tmp_toggle;
+      led_toggle(tmp_toggle);
+    }
+    else { tmp_counter++; }
+
 }
 
 
