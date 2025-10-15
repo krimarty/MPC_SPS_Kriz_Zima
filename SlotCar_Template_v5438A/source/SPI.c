@@ -14,8 +14,7 @@
  *  SPI_init   -   initializes SPI interface at a speed of 4MHz
  *  returns - NA
  */
-void SPI_init(void)
-{
+void SPI_init(void){
     // SPI at UCSI B
     // SPI pins setup
     P3SEL |= 0x0E;                  // PIN1-3 - functional module 1 (SPI module), CS controlled by SW
@@ -38,8 +37,7 @@ void SPI_init(void)
  *  addr - address for the data reading
  *  returns - uint8 value received by SPI
  */
-uint8_t SPI_read_byte(uint8_t addr)
-{
+uint8_t SPI_read_byte(uint8_t addr){
     uint8_t data;
     P3OUT &= ~0x01;                 // CS to LOW
     UCB0TXBUF = addr;               // Transmit first character - address to be read
@@ -59,8 +57,7 @@ uint8_t SPI_read_byte(uint8_t addr)
  *  data - data to be written at a specific addreess
  *  return - NA
  */
-void SPI_write_byte(uint8_t addr, uint8_t data)
-{
+void SPI_write_byte(uint8_t addr, uint8_t data){
     P3OUT &= ~0x01;                 // CS to LOW
     UCB0TXBUF = addr;               // Transmit first character - address to be read
     SPI_delay();
@@ -70,8 +67,7 @@ void SPI_write_byte(uint8_t addr, uint8_t data)
     P3OUT |= 0x01;                  // CS to HIGH
 }
 
-void SPI_delay(void)
-{
+void SPI_delay(void){
     uint8_t i;
     for (i = 0; i <1 ; i++);
 }

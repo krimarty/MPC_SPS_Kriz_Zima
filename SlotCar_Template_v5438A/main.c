@@ -28,7 +28,6 @@ volatile uint8_t UART_addr = 0;
 volatile uint8_t UART_rx_memory[4];
 volatile UART_tx_buffer_t UART_tx_buffer = {0};
 
-
 //
 
 uint16_t Y_unsigned = 0;
@@ -57,8 +56,7 @@ int main(void)
 
     int16_t imu_data[6];
     uint8_t i = 0;
-    for (; i < 6; i++) 
-    {
+    for (; i < 6; i++){
       imu_data[i] = 20000+i;
     }
 
@@ -69,14 +67,14 @@ int main(void)
     while(1){
         UART_prepare_buffer_bin(&UART_tx_buffer, imu_data,6);
 
-        // kontrola configu
-        whoami = QMI8658_read_reg(0x00);   // WHOAMI
-        ctrl1  = QMI8658_read_reg(0x02);   // CTRL1
-        ctrl2  = QMI8658_read_reg(0x03);   // CTRL2
-        ctrl3  = QMI8658_read_reg(0x04);   // CTRL3
-        ctrl5  = QMI8658_read_reg(0x06);   // CTRL5
-        ctrl7  = QMI8658_read_reg(0x08);   // CTRL7
-        status = QMI8658_read_reg(0x2D);   // STATUSINT
+        // kontrola configu 
+        whoami = QMI8658_read_reg(REG_QMI_WHOAMI);   // WHOAMI
+        ctrl1  = QMI8658_read_reg(REG_QMI_CTRL1);   // CTRL1
+        ctrl2  = QMI8658_read_reg(REG_QMI_CTRL2);   // CTRL2
+        ctrl3  = QMI8658_read_reg(REG_QMI_CTRL3);   // CTRL3
+        ctrl5  = QMI8658_read_reg(REG_QMI_CTRL5);   // CTRL5
+        ctrl7  = QMI8658_read_reg(REG_QMI_CTRL7);   // CTRL7
+        status = QMI8658_read_reg(REG_QMI_STATUSINT);   // STATUSINT
 
         // načti data ze snímače 
         QMI8658_read_accel(&ax, &ay, &az);
