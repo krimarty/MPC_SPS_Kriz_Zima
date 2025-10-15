@@ -44,7 +44,7 @@ void motor_duty(uint8_t duty)
 void go_forward(uint8_t duty)
 {
     // Set dir pin to forward
-    H_PHASE_FW();
+    H_PHASE_RV();
 
     // Hard stopping
     H_MODE1_ON();
