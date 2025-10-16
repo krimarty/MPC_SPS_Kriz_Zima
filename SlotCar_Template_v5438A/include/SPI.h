@@ -18,6 +18,7 @@ void SPI_init(void);
 uint8_t SPI_read_byte(uint8_t addr);
 void SPI_write_byte(uint8_t addr, uint8_t data);
 void SPI_delay(void);
+void SPI_read_bytes(uint8_t addr, uint8_t *buffer, uint8_t length);
 
 // variables
 

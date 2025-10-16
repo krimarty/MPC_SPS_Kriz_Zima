@@ -23,10 +23,11 @@ uint8_t RXByteCtr = 0;
 uint8_t ReceiveIndex = 0;
 
 // UART
-volatile uint8_t UART_rx_state = 0;
-volatile uint8_t UART_addr = 0;
-volatile uint8_t UART_rx_memory[4];
+volatile uint8_t UART_rx_byte = 0;
 volatile UART_tx_buffer_t UART_tx_buffer = {0};
+
+//SPI
+volatile int16_t imu_data[IMU_DATA_SIZE];
 
 
 uint16_t Y_unsigned = 0;
@@ -41,7 +42,6 @@ int main(void)
 {
     WDTCTL = WDTPW | WDTHOLD;   // stop watchdog timer
     initClockTo16MHz();
-    _BIS_SR(GIE);
     LED_init();
 
     UART_init();
@@ -49,37 +49,69 @@ int main(void)
     go_forward(30);
 
     QMI8658_init();
+    _BIS_SR(GIE);
 
+    // Setting up bluetooth communication, false for disable
     UART_tx_buffer.buffer_empty = true;
 
-    int16_t imu_data[6];
-    uint8_t i = 0;
-    for (; i < 6; i++){
-      imu_data[i] = 20000+i;
-    }
+    
 
     // hodnoty ze snimace
-    int16_t ax, ay, az, gx, gy, gz;
+    //int16_t ax, ay, az, gx, gy, gz;
     uint8_t whoami, ctrl1, ctrl2, ctrl3, ctrl5, ctrl7, status;
 
     while(1){
         UART_prepare_buffer_bin(&UART_tx_buffer, imu_data,6);
 
         // kontrola configu 
-        whoami = QMI8658_read_reg(REG_QMI_WHOAMI);   // WHOAMI
-        ctrl1  = QMI8658_read_reg(REG_QMI_CTRL1);   // CTRL1
-        ctrl2  = QMI8658_read_reg(REG_QMI_CTRL2);   // CTRL2
-        ctrl3  = QMI8658_read_reg(REG_QMI_CTRL3);   // CTRL3
-        ctrl5  = QMI8658_read_reg(REG_QMI_CTRL5);   // CTRL5
-        ctrl7  = QMI8658_read_reg(REG_QMI_CTRL7);   // CTRL7
-        status = QMI8658_read_reg(REG_QMI_STATUSINT);   // STATUSINT
+        //whoami = QMI8658_read_reg(REG_QMI_WHOAMI);   // WHOAMI
+        //ctrl1  = QMI8658_read_reg(REG_QMI_CTRL1);   // CTRL1
+        //ctrl2  = QMI8658_read_reg(REG_QMI_CTRL2);   // CTRL2
+        //ctrl3  = QMI8658_read_reg(REG_QMI_CTRL3);   // CTRL3
+        //ctrl5  = QMI8658_read_reg(REG_QMI_CTRL5);   // CTRL5
+        //ctrl7  = QMI8658_read_reg(REG_QMI_CTRL7);   // CTRL7
+        //status = QMI8658_read_reg(REG_QMI_STATUSINT);   // STATUSINT
 
         // načti data ze snímače 
-        QMI8658_read_accel(&ax, &ay, &az);
-        QMI8658_read_gyro(&gx, &gy, &gz);
+        //QMI8658_read_accel(imu_data);
+        //QMI8658_read_gyro(imu_data);
+        //QMI8658_read_imu(imu_data);
 
-        __delay_cycles(1600000);  // ~100 ms mezi čteními
+        if (imu_data[Ax] > 0) //natoceno napravo
+        {
+          if (imu_data[Ay] > 614) //dopredu
+            FR_on();
+          else
+            RR_on();
+        }
+        else{
+          if (imu_data[Ay] > 614) //dopredu
+            FL_on();
+          else
+            RL_on();
+        }
+
+        //__delay_cycles(1600000);  // ~100 ms mezi čteními
     }   
+}
+
+// Interrupt for QMI sensor 
+#pragma vector=PORT2_VECTOR
+__interrupt void PORT2_ISR(void) {
+  if (P2IFG & BIT3) {
+    P2IFG &= ~BIT3;
+    uint8_t status = QMI8658_read_reg(REG_QMI_STATUS0);
+    if (status == 3)
+    {
+      QMI8658_read_imu(imu_data);
+    }
+    else if (status == 2) {
+      QMI8658_read_gyro(imu_data);
+    }
+    else {
+      QMI8658_read_accel(imu_data);
+    }
+  }
 }
 
 // Interupt for UART
@@ -91,22 +123,7 @@ __interrupt void USCI_A1_ISR(void)
         case 0: break;           // No interrupt
         case 2:                  // RXIFG – received
         {
-            uint8_t rx_val = UCA1RXBUF;  // byte from buffer
-            switch (UART_rx_state) {
-              case 0: // Waiting for sync
-                if (rx_val == 0xAA) {UART_rx_state = 1;}
-                break;
-
-              case 1: // Adress
-                UART_addr = rx_val;
-                UART_rx_state = 2;
-                break;
-
-              case 2: // Data
-                UART_rx_memory[UART_addr] = rx_val;
-                UART_rx_state = 0;
-                break;
-            }
+            UART_rx_byte = UCA1RXBUF;  // byte from buffer
             break;
         }
         case 4:   // Ready to send next byte

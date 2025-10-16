@@ -12,6 +12,7 @@ ORDERED_OBJS += \
 "./source/ADC.obj" \
 "./source/I2C.obj" \
 "./source/LED.obj" \
+"./source/QMI8658.obj" \
 "./source/SPI.obj" \
 "./source/UART.obj" \
 "./source/motor.obj" \
@@ -148,8 +149,8 @@ SlotCar_Template_v5438A.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "main.obj" "source/ADC.obj" "source/I2C.obj" "source/LED.obj" "source/SPI.obj" "source/UART.obj" "source/motor.obj" 
-	-$(RM) "main.d" "source/ADC.d" "source/I2C.d" "source/LED.d" "source/SPI.d" "source/UART.d" "source/motor.d" 
+	-$(RM) "main.obj" "source/ADC.obj" "source/I2C.obj" "source/LED.obj" "source/QMI8658.obj" "source/SPI.obj" "source/UART.obj" "source/motor.obj" 
+	-$(RM) "main.d" "source/ADC.d" "source/I2C.d" "source/LED.d" "source/QMI8658.d" "source/SPI.d" "source/UART.d" "source/motor.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
