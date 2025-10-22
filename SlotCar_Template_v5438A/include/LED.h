@@ -69,6 +69,10 @@ void led_toggle(bool var);
 
 void front_blink();
 void blink_first_round(bool bit);
+void FL_on();
+void FR_on();
+void RL_on();
+void RR_on();
 
 // variables
 

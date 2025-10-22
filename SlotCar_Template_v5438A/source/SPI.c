@@ -74,3 +74,24 @@ void SPI_delay(void){
     uint8_t i;
     for (i = 0; i <1 ; i++);
 }
+
+void SPI_read_bytes(uint8_t addr, uint8_t *buffer, uint8_t length) {
+    P3OUT &= ~0x01;             // CS LOW
+    UCB0TXBUF = addr;
+    SPI_delay();
+    while (!(UCB0IFG & UCRXIFG)); 
+    volatile uint8_t dummy = UCB0RXBUF;  // přečíst první dummy byte
+
+    uint8_t i=0;
+    for (; i < length; i++) {
+        UCB0TXBUF = addr++;       // vyslat dummy pro čtení
+        SPI_delay();
+        SPI_delay();
+        while (!(UCB0IFG & UCRXIFG));
+        uint8_t tmp = UCB0RXBUF;
+        buffer[i] = UCB0RXBUF;
+    }
+
+    P3OUT |= 0x01;             // CS HIGH
+}
+

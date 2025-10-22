@@ -5,6 +5,17 @@
 #include <stdint.h>
 #include <msp430.h>
 
+// Array for IMU
+#define IMU_DATA_SIZE 6
+
+#define Ax 0
+#define Ay 1
+#define Az 2
+
+#define Gx 3
+#define Gy 4
+#define Gz 5
+
 // QMI8658A register map
 #define QMI_READ            0x80 // pro cteni adres je MSB adresy 1, pro write 0
 
@@ -44,8 +55,10 @@
 #define REG_QMI_RESET       0x60
 
 void    QMI8658_init(void);
-void    QMI8658_read_accel(int16_t *ax, int16_t *ay, int16_t *az);
-void    QMI8658_read_gyro (int16_t *gx, int16_t *gy, int16_t *gz);
+void    QMI8658_read_accel(int16_t* imu_data);
+void    QMI8658_read_gyro (int16_t* imu_data);
 uint8_t QMI8658_read_reg(uint8_t reg);
+void QMI8658_read_imu(int16_t* imu_data);
+void IMU_interrupt_init(void);
 
 #endif /* QMI8658_H_ */

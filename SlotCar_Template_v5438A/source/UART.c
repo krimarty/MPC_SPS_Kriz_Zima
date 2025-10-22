@@ -41,7 +41,7 @@ void UART_init(void)
 
 void UART_tx_timer_init(void)
 {
-    TA1CCR0 = 50000 - 1;              // 250000 Hz / 10 Hz = 25000
+    TA1CCR0 = 25000 - 1;              // 250000 Hz / 10 Hz = 25000
     TA1CTL = TASSEL_2 | MC_1 | ID_3;  // SMCLK (16 MHz), /8 -> 2 MHz
     TA1EX0 = TAIDEX_7;                // další dělička /8 => celkem /64
     TA1CCTL0 = CCIE;                  // povolit přerušení

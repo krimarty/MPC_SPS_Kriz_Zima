@@ -20,6 +20,42 @@ void RGB_LED_init(void){
 
 void led_toggle(bool var){
     if (var){
+void FR_on()
+{
+    LED_FL_OFF();
+    LED_FR_ON();
+    LED_RL_OFF();
+    LED_RR_OFF();
+}
+
+void FL_on()
+{
+    LED_FL_ON();
+    LED_FR_OFF();
+    LED_RL_OFF();
+    LED_RR_OFF();
+}
+
+void RR_on()
+{
+    LED_FL_OFF();
+    LED_FR_OFF();
+    LED_RL_OFF();
+    LED_RR_ON();
+}
+
+void RL_on()
+{
+    LED_FL_OFF();
+    LED_FR_OFF();
+    LED_RL_ON();
+    LED_RR_OFF();
+}
+
+void led_toggle(bool var)
+{
+    if (var)
+    {
         LED_FL_ON();
         LED_FR_ON();
         LED_RL_OFF();

@@ -2,6 +2,7 @@
 "./source/ADC.obj"
 "./source/I2C.obj"
 "./source/LED.obj"
+"./source/QMI8658.obj"
 "./source/SPI.obj"
 "./source/UART.obj"
 "./source/motor.obj"
