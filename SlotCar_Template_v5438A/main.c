@@ -7,12 +7,16 @@
 #include "include/ADXL343.h"
 #include "include/main.h"
 #include "include/QMI8658.h"
+#include "include/Track.h"
 //#include "include/L3GD20H.h"
 
 // QMI8658 SPI snimac
 
 #define I2C_RX_BUFFER_SIZE 5
 #define SPI_BUFFER_SIZE 8
+
+bool first_run = 1;
+bool track_repeating = 0;
 
 void initClockTo16MHz(void);
 
@@ -42,7 +46,10 @@ int main(void)
 {
     WDTCTL = WDTPW | WDTHOLD;   // stop watchdog timer
     initClockTo16MHz();
+    _BIS_SR(GIE);
+
     LED_init();
+    blink_first_round(true);
 
     UART_init();
     motor_init();
@@ -59,6 +66,9 @@ int main(void)
     uint8_t whoami, ctrl1, ctrl2, ctrl3, ctrl5, ctrl7, status;
 
     while(1){
+        if(!first_run) blink_first_round(false);
+        first_run = !track_repeating;
+        
         UART_prepare_buffer_bin(&UART_tx_buffer, imu_data,6);
 
         go_forward(25);
