@@ -46,7 +46,6 @@ int main(void)
 
     UART_init();
     motor_init();
-    go_forward(30);
 
     QMI8658_init();
     _BIS_SR(GIE);
@@ -55,13 +54,14 @@ int main(void)
     UART_tx_buffer.buffer_empty = true;
 
     
-
     // hodnoty ze snimace
     //int16_t ax, ay, az, gx, gy, gz;
     uint8_t whoami, ctrl1, ctrl2, ctrl3, ctrl5, ctrl7, status;
 
     while(1){
         UART_prepare_buffer_bin(&UART_tx_buffer, imu_data,6);
+
+        go_forward(25);
 
         // kontrola configu 
         //whoami = QMI8658_read_reg(REG_QMI_WHOAMI);   // WHOAMI
@@ -100,17 +100,7 @@ int main(void)
 __interrupt void PORT2_ISR(void) {
   if (P2IFG & BIT3) {
     P2IFG &= ~BIT3;
-    uint8_t status = QMI8658_read_reg(REG_QMI_STATUS0);
-    if (status == 3)
-    {
-      QMI8658_read_imu(imu_data);
-    }
-    else if (status == 2) {
-      QMI8658_read_gyro(imu_data);
-    }
-    else {
-      QMI8658_read_accel(imu_data);
-    }
+    QMI8658_read_imu(imu_data);
   }
 }
 
