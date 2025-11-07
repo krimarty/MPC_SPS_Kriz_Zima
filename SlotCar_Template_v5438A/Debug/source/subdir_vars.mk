@@ -9,7 +9,9 @@ C_SRCS += \
 ../source/LED.c \
 ../source/QMI8658.c \
 ../source/SPI.c \
+../source/Track.c \
 ../source/UART.c \
+../source/correlation.c \
 ../source/motor.c 
 
 C_DEPS += \
@@ -18,7 +20,9 @@ C_DEPS += \
 ./source/LED.d \
 ./source/QMI8658.d \
 ./source/SPI.d \
+./source/Track.d \
 ./source/UART.d \
+./source/correlation.d \
 ./source/motor.d 
 
 OBJS += \
@@ -27,7 +31,9 @@ OBJS += \
 ./source/LED.obj \
 ./source/QMI8658.obj \
 ./source/SPI.obj \
+./source/Track.obj \
 ./source/UART.obj \
+./source/correlation.obj \
 ./source/motor.obj 
 
 OBJS__QUOTED += \
@@ -36,7 +42,9 @@ OBJS__QUOTED += \
 "source/LED.obj" \
 "source/QMI8658.obj" \
 "source/SPI.obj" \
+"source/Track.obj" \
 "source/UART.obj" \
+"source/correlation.obj" \
 "source/motor.obj" 
 
 C_DEPS__QUOTED += \
@@ -45,7 +53,9 @@ C_DEPS__QUOTED += \
 "source/LED.d" \
 "source/QMI8658.d" \
 "source/SPI.d" \
+"source/Track.d" \
 "source/UART.d" \
+"source/correlation.d" \
 "source/motor.d" 
 
 C_SRCS__QUOTED += \
@@ -54,7 +64,9 @@ C_SRCS__QUOTED += \
 "../source/LED.c" \
 "../source/QMI8658.c" \
 "../source/SPI.c" \
+"../source/Track.c" \
 "../source/UART.c" \
+"../source/correlation.c" \
 "../source/motor.c" 
 
 

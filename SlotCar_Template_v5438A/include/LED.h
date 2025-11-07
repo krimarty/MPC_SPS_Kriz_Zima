@@ -73,6 +73,7 @@ void FL_on();
 void FR_on();
 void RL_on();
 void RR_on();
+void front_off();
 
 // variables
 

@@ -4,7 +4,9 @@
 "./source/LED.obj"
 "./source/QMI8658.obj"
 "./source/SPI.obj"
+"./source/Track.obj"
 "./source/UART.obj"
+"./source/correlation.obj"
 "./source/motor.obj"
 "../lnk_msp430f5438a.cmd"
 -llibmath.a

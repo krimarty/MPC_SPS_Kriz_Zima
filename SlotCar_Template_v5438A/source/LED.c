@@ -18,22 +18,22 @@ void RGB_LED_init(void){
     P7DIR |= BIT2;  // BLUE led as output
 }
 
-void led_toggle(bool var){
-    if (var){
 void FR_on()
 {
     LED_FL_OFF();
     LED_FR_ON();
-    LED_RL_OFF();
-    LED_RR_OFF();
 }
 
 void FL_on()
 {
     LED_FL_ON();
     LED_FR_OFF();
-    LED_RL_OFF();
-    LED_RR_OFF();
+}
+
+void front_off()
+{
+    LED_FL_OFF();
+    LED_FR_OFF();
 }
 
 void RR_on()
@@ -69,6 +69,7 @@ void led_toggle(bool var)
     }
 }
 
+/*
 void blink_first_round(bool bit){
     if(bit){
         LED_FL_ON();
@@ -84,3 +85,4 @@ void blink_first_round(bool bit){
     }
     // jinak by nemel delat nic a led se ridi pomoci jinych funkci
 }
+*/

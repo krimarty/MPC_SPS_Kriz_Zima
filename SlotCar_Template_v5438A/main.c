@@ -49,7 +49,6 @@ int main(void)
     _BIS_SR(GIE);
 
     LED_init();
-    blink_first_round(true);
 
     UART_init();
     motor_init();
@@ -60,45 +59,24 @@ int main(void)
     // Setting up bluetooth communication, false for disable
     UART_tx_buffer.buffer_empty = true;
 
-    
-    // hodnoty ze snimace
-    //int16_t ax, ay, az, gx, gy, gz;
-    uint8_t whoami, ctrl1, ctrl2, ctrl3, ctrl5, ctrl7, status;
-
-    while(1){
-        if(!first_run) blink_first_round(false);
-        first_run = !track_repeating;
-        
+    while(1){        
         UART_prepare_buffer_bin(&UART_tx_buffer, imu_data,6);
 
-        go_forward(25);
 
-        // kontrola configu 
-        //whoami = QMI8658_read_reg(REG_QMI_WHOAMI);   // WHOAMI
-        //ctrl1  = QMI8658_read_reg(REG_QMI_CTRL1);   // CTRL1
-        //ctrl2  = QMI8658_read_reg(REG_QMI_CTRL2);   // CTRL2
-        //ctrl3  = QMI8658_read_reg(REG_QMI_CTRL3);   // CTRL3
-        //ctrl5  = QMI8658_read_reg(REG_QMI_CTRL5);   // CTRL5
-        //ctrl7  = QMI8658_read_reg(REG_QMI_CTRL7);   // CTRL7
-        //status = QMI8658_read_reg(REG_QMI_STATUSINT);   // STATUSINT
-
-        // načti data ze snímače 
-        //QMI8658_read_accel(imu_data);
-        //QMI8658_read_gyro(imu_data);
-        //QMI8658_read_imu(imu_data);
-
-        if (imu_data[Ax] > 0) //natoceno napravo
+        // Indicates LEFT or RIGHT turn
+        if (imu_data[Gz] > 200) //zatacka vpravo/vlevo
         {
-          if (imu_data[Ay] > 614) //dopredu
-            FR_on();
-          else
-            RR_on();
+          go_forward(25);
+          FL_on();
         }
-        else{
-          if (imu_data[Ay] > 614) //dopredu
-            FL_on();
-          else
-            RL_on();
+        else if (imu_data[Gz] < -200)
+        {
+          go_forward(25);
+          FR_on();
+        }
+        else {
+          go_forward(40);
+          front_off();
         }
 
         //__delay_cycles(1600000);  // ~100 ms mezi čteními
