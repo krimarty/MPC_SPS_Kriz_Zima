@@ -62,23 +62,21 @@ int main(void)
     while(1){        
         UART_prepare_buffer_bin(&UART_tx_buffer, imu_data,6);
 
-
         // Indicates LEFT or RIGHT turn
-        if (imu_data[Gz] > 200) //zatacka vpravo/vlevo
+        if (imu_data[Gz] > 150) //zatacka vpravo/vlevo
         {
-          go_forward(25);
+          go_forward(29);
           FL_on();
         }
-        else if (imu_data[Gz] < -200)
+        else if (imu_data[Gz] < -150)
         {
-          go_forward(25);
+          go_forward(29);
           FR_on();
         }
         else {
-          go_forward(40);
+          go_forward(35);
           front_off();
         }
-
         //__delay_cycles(1600000);  // ~100 ms mezi čteními
     }   
 }
