@@ -8,6 +8,7 @@
 #include "include/main.h"
 #include "include/QMI8658.h"
 #include "include/Track.h"
+#include "include/correlation.h"
 //#include "include/L3GD20H.h"
 
 // QMI8658 SPI snimac
@@ -41,6 +42,19 @@ int read = 0;
 
 int16_t x;
 uint16_t a;
+volatile uint8_t blinkCounter = 0;
+bool blinkToggle = false;
+
+volatile bool saveDataFlag = false;
+volatile bool racing = false;
+
+
+
+struct lapData
+{
+  int8_t data[500];
+  uint16_t size;
+};
 
 int main(void)
 {
@@ -59,6 +73,13 @@ int main(void)
     // Setting up bluetooth communication, false for disable
     UART_tx_buffer.buffer_empty = true;
 
+    struct lapData laps = {
+      .data = {0},
+      .size = 0
+      };
+
+    int8_t turn = 0;
+
     while(1){        
         UART_prepare_buffer_bin(&UART_tx_buffer, imu_data,6);
 
@@ -67,15 +88,27 @@ int main(void)
         {
           go_forward(29);
           FL_on();
+          turn = -1;
         }
         else if (imu_data[Gz] < -150)
         {
           go_forward(29);
           FR_on();
+          turn = 1;
         }
         else {
           go_forward(35);
           front_off();
+          turn = 0;
+        }
+
+        if (saveDataFlag)
+        {
+          saveDataFlag = false;
+          laps.data[laps.size] = turn;
+          ++laps.size;
+          int8_t correlationData[RANGE];
+          racing = auto_correlation(laps.size, laps.data, correlationData);
         }
         //__delay_cycles(1600000);  // ~100 ms mezi čteními
     }   
@@ -121,6 +154,20 @@ __interrupt void Timer1_A_ISR(void)
       UCA1TXBUF = UART_tx_buffer.data[UART_tx_buffer.index++];
       UCA1IE |= UCTXIE;
     }  
+
+    if(racing == false)
+    {
+      saveDataFlag = true;
+      if (blinkCounter > 4)
+      {
+        blinkCounter= 0;
+        led_toggle(blinkToggle);
+        blinkToggle = !blinkToggle;
+      }
+      else {
+        blinkCounter++;
+      }
+    }
 }
 
 

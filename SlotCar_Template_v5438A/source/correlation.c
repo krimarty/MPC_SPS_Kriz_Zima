@@ -1,11 +1,15 @@
 #include "include/correlation.h"
 
-void auto_correlation(uint16_t data_size, int8_t *data, int8_t *output)
+bool auto_correlation(uint16_t data_size, int8_t *data, int8_t *output)
 {
-    if (data_size < RANGE)
-        return;
+    if (data_size < RANGE || data_size < 50)
+        return false;
+    if (!data || !output)
+        return false;
 
     int16_t sumsq = 0;
+
+    bool new_lap = false;
 
     uint16_t i = 0;
     for (; i < data_size; ++i) 
@@ -30,8 +34,15 @@ void auto_correlation(uint16_t data_size, int8_t *data, int8_t *output)
         int16_t den = (data_size - i) * sumsq;
 
         output[k] = num/den;
+
+        if (output[k] > TRESHOLD)
+        {
+            new_lap = true;
+            //return new_lap;
+        }
+
         k++;
     }
 
-    return;
+    return new_lap;
 }
