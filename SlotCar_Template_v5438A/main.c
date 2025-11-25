@@ -73,6 +73,13 @@ int main(void)
     // Setting up bluetooth communication, false for disable
     UART_tx_buffer.buffer_empty = true;
 
+    //data about planes
+    struct planes planes = {0}; 
+    uint8_t plane_seq = 0;
+    uint8_t progress = 0;
+    bool new_plane = false;
+
+
     struct lapData laps = {
       .data = {0},
       .size = 0
@@ -83,6 +90,8 @@ int main(void)
     while(1){        
         UART_prepare_buffer_bin(&UART_tx_buffer, imu_data,6);
 
+        if (!racing)
+        {
         // Indicates LEFT or RIGHT turn
         if (imu_data[Gz] > 150) //zatacka vpravo/vlevo
         {
@@ -109,6 +118,50 @@ int main(void)
           ++laps.size;
           int8_t correlationData[RANGE];
           racing = auto_correlation(laps.size, laps.data, correlationData);
+          planes = find_planes(laps.size, laps.data);
+        }
+        }
+        
+        if (racing)
+        {
+          if (imu_data[Gz] > 150) //zatacka vpravo/vlevo
+          {
+            go_forward(29);
+            FL_on();
+            new_plane = true;
+          }
+          else if (imu_data[Gz] < -150)
+          {
+            go_forward(29);
+            FR_on();
+            new_plane = true;
+          }
+          else {
+            //go_forward(40);
+            //front_off();
+            if (!new_plane)
+            {
+              ++progress;
+              if (progress > planes.iLenght[plane_seq - 1])
+              {
+                go_forward(29);
+                FL_on();
+              }
+              else 
+              {
+                go_forward(50);
+                FR_on();
+
+              }
+            }
+            else {
+              new_plane = false;
+              go_forward(50);
+              progress = 0;
+              plane_seq++;
+              if(plane_seq >= planes.iNumber) {plane_seq = 0;}
+            }
+          }
         }
         //__delay_cycles(1600000);  // ~100 ms mezi čteními
     }   

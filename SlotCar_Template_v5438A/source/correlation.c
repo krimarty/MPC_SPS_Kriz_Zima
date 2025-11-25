@@ -46,3 +46,30 @@ bool auto_correlation(uint16_t data_size, int8_t *data, int8_t *output)
 
     return new_lap;
 }
+
+struct planes find_planes(uint16_t data_size, int8_t *data)
+{
+    struct planes planes = {0}; 
+    uint16_t counter = 0;
+    uint16_t i = 0;
+    for (; i < data_size; i++)
+    {
+        if (data[i] == 0 && data[i + 1] == 0 && data[i + 2] == 0) 
+        {
+            uint16_t length = 0;
+
+            while (i < data_size && data[i] == 0)
+            {
+                length++;
+                i++;
+            }
+
+            planes.iLenght[counter] = length;
+            counter++;
+        }
+    }
+
+    planes.iNumber = counter;
+    return planes;
+}
+
