@@ -44,6 +44,7 @@ int16_t x;
 uint16_t a;
 volatile uint8_t blinkCounter = 0;
 bool blinkToggle = false;
+volatile uint8_t progress = 0;
 
 volatile bool saveDataFlag = false;
 volatile bool racing = false;
@@ -76,8 +77,8 @@ int main(void)
     //data about planes
     struct planes planes = {0}; 
     uint8_t plane_seq = 0;
-    uint8_t progress = 0;
-    bool new_plane = false;
+    bool new_plane = true;
+    bool sequence_ack = false;
 
 
     struct lapData laps = {
@@ -138,28 +139,30 @@ int main(void)
           }
           else {
             //go_forward(40);
-            //front_off();
+            front_off();
             if (!new_plane)
             {
-              ++progress;
-              if (progress > planes.iLenght[plane_seq - 1])
+              //++progress;
+              if ((progress*3) > planes.iLenght[plane_seq - 1])
               {
                 go_forward(29);
-                FL_on();
+                if (sequence_ack)
+                {
+                  sequence_ack = false;
+                }
               }
               else 
               {
-                go_forward(50);
-                FR_on();
-
+                go_forward(55);
               }
             }
             else {
-              new_plane = false;
-              go_forward(50);
-              progress = 0;
               plane_seq++;
-              if(plane_seq >= planes.iNumber) {plane_seq = 0;}
+              new_plane = false;
+              go_forward(55);
+              progress = 0;
+              sequence_ack = true;
+              if(plane_seq > planes.iNumber) {plane_seq = 1;}
             }
           }
         }
@@ -220,6 +223,9 @@ __interrupt void Timer1_A_ISR(void)
       else {
         blinkCounter++;
       }
+    }
+    else {
+      progress++;
     }
 }
 
