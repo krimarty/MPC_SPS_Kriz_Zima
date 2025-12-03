@@ -74,6 +74,8 @@ void FR_on();
 void RL_on();
 void RR_on();
 void front_off();
+void back_on();
+void back_off();
 
 // variables
 

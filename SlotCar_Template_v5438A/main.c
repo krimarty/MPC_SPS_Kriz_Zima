@@ -49,6 +49,10 @@ volatile uint8_t progress = 0;
 volatile bool saveDataFlag = false;
 volatile bool racing = false;
 
+volatile  uint16_t deglitcher = 0;
+volatile  bool new_plane = true;
+volatile  bool plane_ack = true;
+
 
 
 struct lapData
@@ -77,8 +81,8 @@ int main(void)
     //data about planes
     struct planes planes = {0}; 
     uint8_t plane_seq = 0;
-    bool new_plane = true;
     bool sequence_ack = false;
+
 
 
     struct lapData laps = {
@@ -92,6 +96,7 @@ int main(void)
         UART_prepare_buffer_bin(&UART_tx_buffer, imu_data,6);
 
         if (!racing)
+        //if (false)
         {
         // Indicates LEFT or RIGHT turn
         if (imu_data[Gz] > 150) //zatacka vpravo/vlevo
@@ -107,7 +112,7 @@ int main(void)
           turn = 1;
         }
         else {
-          go_forward(35);
+          go_forward(30);
           front_off();
           turn = 0;
         }
@@ -124,28 +129,60 @@ int main(void)
         }
         
         if (racing)
+        //if (true)
         {
           if (imu_data[Gz] > 150) //zatacka vpravo/vlevo
           {
-            go_forward(29);
+            if (new_plane == false)
+            {
+              go_forward(10);
+              back_on();
+              __delay_cycles(2600000); // 100ms delay
+            }
+            plane_ack = true;
+            go_forward(33);
             FL_on();
+            back_off();
             new_plane = true;
           }
           else if (imu_data[Gz] < -150)
           {
-            go_forward(29);
+            if (new_plane == false)
+            {
+              go_forward(10);
+              back_on();
+              __delay_cycles(2600000); // 100ms delay
+            }
+            plane_ack = true;
+            go_forward(33);
             FR_on();
+            back_off();
             new_plane = true;
           }
           else {
-            //go_forward(40);
+            front_off();
+            plane_ack = false;
+            if (new_plane == false)
+            {
+              go_forward(45);
+            }
+            else {
+              go_forward(50);
+            }
+            //go_forward(50);
+            if (deglitcher > 3)
+            {
+              new_plane = false;
+            }
+            /*
             front_off();
             if (!new_plane)
             {
               //++progress;
               if ((progress*3) > planes.iLenght[plane_seq - 1])
               {
-                go_forward(29);
+                go_forward(25);
+                back_on();
                 if (sequence_ack)
                 {
                   sequence_ack = false;
@@ -153,7 +190,7 @@ int main(void)
               }
               else 
               {
-                go_forward(55);
+                go_forward(50);
               }
             }
             else {
@@ -164,6 +201,7 @@ int main(void)
               sequence_ack = true;
               if(plane_seq > planes.iNumber) {plane_seq = 1;}
             }
+          */
           }
         }
         //__delay_cycles(1600000);  // ~100 ms mezi čteními
@@ -209,7 +247,18 @@ __interrupt void Timer1_A_ISR(void)
     if (UART_tx_buffer.buffer_empty == false){
       UCA1TXBUF = UART_tx_buffer.data[UART_tx_buffer.index++];
       UCA1IE |= UCTXIE;
-    }  
+    }
+
+    if (new_plane == true)
+    {
+      if (plane_ack == false)
+      {
+        deglitcher++;
+      }
+    }
+    else {
+      deglitcher = 0;
+    }
 
     if(racing == false)
     {

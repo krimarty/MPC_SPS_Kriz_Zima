@@ -52,6 +52,18 @@ void RL_on()
     LED_RR_OFF();
 }
 
+void back_on()
+{
+    LED_RL_ON();
+    LED_RR_ON();
+}
+
+void back_off()
+{
+    LED_RL_OFF();
+    LED_RR_OFF();
+}
+
 void led_toggle(bool var)
 {
     if (var)
