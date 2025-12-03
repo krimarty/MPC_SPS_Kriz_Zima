@@ -50,8 +50,8 @@ volatile bool saveDataFlag = false;
 volatile bool racing = false;
 
 volatile  uint16_t deglitcher = 0;
-volatile  bool new_plane = true;
-volatile  bool plane_ack = true;
+volatile  bool new_plane = false;
+volatile  bool plane_ack = false;
 
 
 
@@ -124,6 +124,10 @@ int main(void)
           ++laps.size;
           int8_t correlationData[RANGE];
           racing = auto_correlation(laps.size, laps.data, correlationData);
+          if (laps.size > 400)
+          {
+            racing = true;
+          }
           planes = find_planes(laps.size, laps.data);
         }
         }
@@ -131,30 +135,30 @@ int main(void)
         if (racing)
         //if (true)
         {
-          if (imu_data[Gz] > 150) //zatacka vpravo/vlevo
+          if (imu_data[Gz] > 175) //zatacka vpravo/vlevo
           {
             if (new_plane == false)
             {
               go_forward(10);
               back_on();
-              __delay_cycles(2600000); // 100ms delay
+              __delay_cycles(4600000); // 100ms delay
             }
             plane_ack = true;
-            go_forward(33);
+            go_forward(38);
             FL_on();
             back_off();
             new_plane = true;
           }
-          else if (imu_data[Gz] < -150)
+          else if (imu_data[Gz] < -175)
           {
             if (new_plane == false)
             {
               go_forward(10);
               back_on();
-              __delay_cycles(2600000); // 100ms delay
+              __delay_cycles(4600000); // 100ms delay
             }
             plane_ack = true;
-            go_forward(33);
+            go_forward(38);
             FR_on();
             back_off();
             new_plane = true;
@@ -167,10 +171,10 @@ int main(void)
               go_forward(45);
             }
             else {
-              go_forward(50);
+              go_forward(45);
             }
             //go_forward(50);
-            if (deglitcher > 3)
+            if (deglitcher > 2)
             {
               new_plane = false;
             }
